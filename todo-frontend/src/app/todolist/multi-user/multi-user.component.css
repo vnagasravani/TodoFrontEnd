@@ -1,0 +1,262 @@
+@import url(https://fonts.googleapis.com/css?family=Lato:400,700);
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+body {
+  background: #C5DDEB;
+  font: 14px/20px "Lato", Arial, sans-serif;
+  padding: 40px 0;
+  color: white;
+}
+
+.container-fluid{
+ 
+  /* background: #444753;  */
+  border-radius: 5px;
+}
+
+.people-list {
+  width: 90%;
+  float: left;
+  height: 100vh;
+  margin:auto;
+  overflow-y: scroll;
+}
+.people-list .search {
+  padding: 20px;
+  
+
+}
+.people-list input {
+  border-radius: 25px;
+  border:none;
+  /* border: solid 2px #434651; */
+  padding: 14px;
+  /* color: white; */
+  /* background:aquamarine; */
+  width: 90%;
+  margin-bottom:5%;
+  -webkit-box-shadow: 0px 2px 12px -2px #24a0ed;
+  -moz-box-shadow: 0px 2px 12px -2px #24a0ed;
+  box-shadow: 0px 2px 12px -2px #24a0ed;
+  font-size: 14px;
+}
+.people-list .fa-search {
+  position: relative;
+  left: -25px;
+}
+.people-list ul {
+  padding: 20px;
+  height: 95vh;
+  list-style-type:none;
+  /* margin-left: 10%; */
+  
+}
+.people-list ul li {
+  padding-bottom: 10px;
+  padding-top:10px;
+ margin:auto;
+ margin-top:5%;
+  margin-bottom:5%;
+  background-color: #e3f2fd;
+  border:none;
+  width:100%;
+  height:10%;
+  border-radius: 10%;
+  cursor: pointer;
+  -webkit-box-shadow: 0px 2px 12px -2px #24a0ed;
+  -moz-box-shadow: 0px 2px 12px -2px #24a0ed;
+  box-shadow: 0px 2px 12px -2px #24a0ed;
+}
+ 
+.people-list img {
+  float: left;
+}
+.people-list .about {
+  float: left;
+  margin-top: 8px;
+  
+}
+.people-list .about {
+  padding-left: 8px;
+}
+.people-list .status {
+  color: #92959E;
+}
+
+/* .people-list .input{
+    background-color: white;
+} */
+
+.chat {
+  width: 100%;
+  height: 100vh;
+  float: left;
+  background: #F2F5F8;
+  margin:auto;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  color: #434651;
+  overflow-y: scroll;
+}
+.chat .chat-header {
+  padding: 20px;
+  border-bottom: 2px solid white;
+}
+.chat .chat-header img {
+  float: left;
+}
+.chat .chat-header .chat-about {
+  float: left;
+  padding-left: 10px;
+  margin-top: 6px;
+}
+.chat .chat-header .chat-with {
+  font-weight: bold;
+  font-size: 16px;
+  color:#24a0ed;
+}
+.chat .chat-header .chat-num-messages {
+  color: #24a0ed;
+}
+.chat .chat-header .fa-undo-alt {
+  float: right;
+  font-size: 20px;
+  margin-top: 12px;
+  margin-left:5%;
+  /* margin-left:10%; */
+  cursor: pointer;
+  color:#24a0ed;
+}
+
+.chat .chat-header .fa-arrow-left {
+  float: left;
+  font-size: 20px;
+  margin-top: 12px;
+  margin-left:5%;
+  /* margin-left:10%; */
+  cursor: pointer;
+  color:#24a0ed;
+}
+
+
+.chat .chat-header .fa-plus-circle{
+  float: right;
+  font-size: 20px;
+  margin-top: 12px;
+  margin-left: 5%;
+  cursor: pointer; 
+  color:#24a0ed;
+}
+
+.todos{
+  width : 75%;
+  height:40%;
+  margin:auto;
+  margin-bottom: 5px;
+}
+
+.todos li{
+  /* border:2px solid; */
+  border-radius: 20px;
+  background: #e3f2fd;
+  color:#24a0ed;
+}
+
+.buttons{
+  float: right;
+  cursor: pointer;
+}
+
+.button{
+  margin:5px;;
+  float: right;
+  cursor: pointer;
+}
+
+.buttonc{
+  float:left;
+  cursor: pointer;
+}
+
+.task{
+  margin-left:5%;
+  margin-top:5px;
+}
+.subtask{
+  margin-left:5%;
+  margin-top: 5px;
+}
+
+
+.online, .offline, .me {
+  margin-right: 3px;
+  font-size: 10px;
+}
+
+.online {
+  color: #86BB71;
+}
+
+.offline {
+  color: #E38968;
+}
+
+.me {
+  color: #94C2ED;
+}
+
+.align-left {
+  text-align: left;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.float-right {
+  float: right;
+}
+
+.clearfix:after {
+  visibility: hidden;
+  display: block;
+  font-size: 0;
+  content: " ";
+  clear: both;
+  height: 0;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
+}
+
+.set{
+   
+  border-radius:15px;
+  margin-top:auto;
+  margin-bottom: auto;
+  -webkit-box-shadow: 0px 2px 20px 1px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 2px 20px 1px rgba(0,0,0,0.75);
+  box-shadow: 0px 2px 20px 1px rgba(0,0,0,0.75);
+   
+
+}
+
+.container {
+  position: relative;
+ 
+  
+}
+
+.animate{
+  transition: all 0.2s ease-in-out;
+}
+.animate:hover{
+  transform: scale(1.04);
+  
+}

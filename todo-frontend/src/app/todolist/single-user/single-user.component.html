@@ -1,0 +1,333 @@
+<br><br>
+<div class="container set bg-light">
+
+  <div class="card w-100 text-center">
+    <div class="card-header" style="background-color: #d8e9ed;">
+      <div class="row">
+        <div class="col-md-3">
+        </div>
+        <div class="col-md-6">
+          <h4 style="color: #189bba;" >Todo Management</h4>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="card-body lists" id="cardbody">
+      <ng-sidebar-container style="height:100vh">
+        <ng-sidebar #sidebar [(opened)]="_opened" mode="over" >
+          <div>
+            <ul class="list-group list-group-flush ">
+              <button *ngIf = "!friendRequests" class="list-group-item list-group-item-dark" data-toggle="modal"
+                data-target="#exampleModal" (click)="sidebar.close()">create todo</button>
+                <li *ngIf = "friendRequests" class="list-group-item list-group-item-dark" (click)="dispalyTodos();sidebar.close()">todolists</li>
+               
+              <li class="list-group-item list-group-item-dark" [routerLink] = "['/friend',userId]">friends</li>
+              <li class="list-group-item list-group-item-dark" (click)="getRequests();sidebar.close();'loading=true'">Friend Requests</li>
+              <li class="list-group-item list-group-item-dark" (click)="logout()">logout</li>
+              <li class="list-group-item list-group-item-dark"><a (click)="sidebar.close()">close</a></li>
+            </ul>
+          </div>
+        </ng-sidebar>
+        <div ng-sidebar-content>
+          <div *ngIf = "!friendRequests ">
+          <div class='parent flex-parent'>
+            <div class='child flex-child'>
+              <a (click)="_toggleSidebar()">
+                <span style="font-size: 2em; color: #189bba; ">
+                  <i class="fas fa-bars"></i>
+               </span> </a>
+            </div>
+            <div class='child flex-child '>
+              <div class="heading">
+              <h3 style= "color:#44c2db">TODO Lists</h3>
+              </div>
+            </div>
+             
+          </div>
+          <hr>
+          <div *ngIf="loading">
+            <ngx-spinner type="pacman" size = "medium"></ngx-spinner>
+            </div>
+          <div *ngIf = "todos.length==0" class="alert alert-info rounded-pill m-auto text-center" style="width:50% " role="alert">
+            <p><b>No Lists Found</b></p>
+          </div>
+          <table *ngFor="let todo of todos" [@todos] class="todos ">
+            <tr>
+              <td >
+              <li class="list-group-item py-3 animate">
+                <span *ngIf = "!todo.complete" class="buttonc" (click)="completeTodo(todo.todoId)" ><i class="far fa-circle"></i></span>
+                <span *ngIf = "todo.complete" class="buttonc" (click)="recompleteTodo(todo.todoId)" ><i class="fas fa-check-circle"></i></span>
+
+                {{todo.todoTitle}}
+                <span class="button" data-toggle="modal" data-target="#addItemModal"(click) ="getTodoId(todo.todoId)" ><i class="fas fa-plus-circle"></i></span>
+                <span class="button" (click)="deleteTodo(todo.todoId)"><i class="fas fa-trash"></i></span>
+                <span class="button" data-toggle="modal" data-target="#updateTodoModal" (click)="getTodoId(todo.todoId)"><i class="fas fa-pen"></i></span>
+              </li>
+              </td>
+            </tr>
+            <tr *ngFor="let item of todo?.itemList" >
+              <td >
+              <li class="list-group-item py-2 task animate">
+                <span *ngIf = "!item.itemComplete" class="buttonc" (click)="completeItem(item.itemId)"><i class="far fa-circle"></i></span>
+                <span *ngIf = "item.itemComplete" class="buttonc" (click)="recompleteItem(todo.todoId,item.itemId)"><i class="fas fa-check-circle"></i></span>
+
+                {{item?.itemName}}
+                <span class="button" data-toggle="modal" data-target="#addSubItemModal" (click) = "getItemId(item.itemId)" ><i class="fas fa-plus-circle"></i></span>
+                <span class="button" (click)="deleteItem(item.itemId)"><i class="fas fa-trash"></i></span>
+                <span class="button" data-toggle="modal" data-target="#updateItemModal" (click) = "getItemId(item.itemId)"><i class="fas fa-pen" ></i></span>
+              </li>
+              <div *ngFor = "let subItem of item?.subItemList" class="subtask" >
+                <li class="list-group-item py-1 subtask animate" >
+                  <span *ngIf = "!subItem.subItemComplete" class="buttonc" (click)="completeSubItem(todo.todoId,item.itemId,subItem.subItemId)"><i class="far fa-circle"></i></span>
+                  <span *ngIf = "subItem.subItemComplete" class="buttonc" (click)="recompleteSubItem(todo.todoId,item.itemId,subItem.subItemId)"><i class="fas fa-check-circle"></i></span>
+
+                  {{subItem?.subItemName}}
+                  <span class="button" (click)="deleteSubItem(subItem.subItemId)"><i class="fas fa-trash"></i></span>
+                  <span class="button" data-toggle="modal" data-target="#updateSubItemModal" (click) = "getItemId(item.itemId); getSubItemId(subItem.subItemId); getTodoId(todo.todoId) "><i class="fas fa-pen"></i></span>
+                </li>
+              </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div *ngIf = "friendRequests">
+          
+          <div class='parent flex-parent'>
+            <div class='child flex-child'>
+              <a (click)="_toggleSidebar()">
+                <span style="font-size: 2em; color:blue ;">
+                  <i class="fas fa-bars"></i>
+               </span> </a>
+            </div>
+            <div class='child flex-child '>
+              <div class="heading">
+              <h3 style= "color:#44c2db">friend Requests</h3>
+              </div>
+            </div>
+          </div>
+          <hr>
+          <div *ngIf = "requests.length==0" class="alert alert-info rounded-pill m-auto text-center" style="width:50% " role="alert">
+            <p><b>No Friend Requests Found</b></p>
+          </div>
+          <div class="row">
+          <div class=" col-md-5 col-sm-5 col-10 cards" [@todos] *ngFor="let request of requests">
+            <div class="card icard name-color" >
+                <div class="card-body">
+                    <h5 class="card-title">{{request.senderName}}</h5>
+                    
+                    
+                    <button class="btn acc-rej accept-reject" (click) = "acceptRequest(request)" >Accept</button>
+                    
+                   
+                    <button class="btn acc-rej accept-reject" (click)="rejectRequest(request)">reject</button>
+                    
+                 </div>
+            </div>
+        </div>
+        </div>
+        </div>
+        </div>
+      </ng-sidebar-container>
+
+
+
+    </div>
+  </div>
+</div>
+
+<br><br>
+
+<!--modal to create todo -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">  create ToDo</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form #todo="ngForm">
+        <div class="modal-body">
+
+          <div class="form-group">
+            <label for="groupName" class="col-form-label">TODO Title :</label>
+            <input type="text" class="form-control" #tname name="title" ngModel>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" data-dismiss="modal"
+            (click)="createTodo(tname.value,todo)">create
+            todo</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+
+<!--modal to update todo-->
+<div class="modal fade" id="updateTodoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Edit ToDo</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form #todou="ngForm">
+        <div class="modal-body">
+
+          <div class="form-group">
+            <label for="groupName" class="col-form-label">TODO Title :</label>
+            <input type="text" class="form-control" #name name="title" ngModel>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" data-dismiss="modal"
+            (click)="updateTodo(name.value,todou)">Edit
+            todo</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<!--modal to add subitem -->
+<div class="modal fade" id="addSubItemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add SubTask</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form #subItem="ngForm">
+        <div class="modal-body">
+
+          <div class="form-group">
+            <label for="groupName" class="col-form-label">SubTask Name:</label>
+            <input type="text" class="form-control" #subtasko name="title" ngModel>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" data-dismiss="modal"
+            (click)="addSubItem(subtasko.value,subItem)">Add
+            Subtask</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<!--modal to add item-->
+<div class="modal fade" id="addItemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Task</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form #item="ngForm">
+        <div class="modal-body">
+
+          <div class="form-group">
+            <label for="groupName" class="col-form-label">Task Name:</label>
+            <input type="text" class="form-control" #taskee name="title" ngModel>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" data-dismiss="modal"
+            (click)="addItem(taskee.value,item)">Add
+            Item</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<!--modal to update item-->
+<div class="modal fade" id="updateItemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Edit Task</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form #itemu="ngForm">
+        <div class="modal-body">
+
+          <div class="form-group">
+            <label for="groupName" class="col-form-label">Task Name:</label>
+            <input type="text" class="form-control" #task name="title" ngModel>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" data-dismiss="modal"
+            (click)="updateItem(task.value,itemu)">Edit
+            Task</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<!--modal to update subItem-->
+<div class="modal fade" id="updateSubItemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Edit SubTask</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form #subItemu="ngForm">
+        <div class="modal-body">
+
+          <div class="form-group">
+            <label for="groupName" class="col-form-label">SubTask Name:</label>
+            <input type="text" class="form-control" #subtask name="title" ngModel>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" data-dismiss="modal"
+            (click)="updateSubItem(subtask.value,subItemu)">Edit
+            Subtask</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+
