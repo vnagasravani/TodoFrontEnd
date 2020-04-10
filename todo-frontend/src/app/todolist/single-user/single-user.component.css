@@ -19,19 +19,46 @@
 
 .flex-parent {
     display: flex;
+    flex-direction: row;
+    justify-content:space-between;
   }
 
   .flex-child {
-   margin-right: auto;
-  order: 2;
+    margin-top:15px;
+    margin-bottom: 10px;
+  flex-grow: 1;
   }
+
+  
 
   .heading{
     text-align:center;
     margin-top: 10px; 
     margin-bottom: 10px;
+    flex-grow: 3;
     font-weight: bold;
     text-shadow: 2px 2px 5px #4f9d9e;
+}
+
+.heading{
+  text-align:center;
+  margin-top: 10px; 
+  margin-bottom: 10px;
+  flex-grow: 2;
+  font-weight: bold;
+  text-shadow: 2px 2px 5px #4f9d9e;
+}
+
+.friend{
+  margin-top:15px;
+  margin-bottom: 10px;
+  flex-grow: 1;
+}
+
+.friendf{
+  margin-top:15px;
+  margin-bottom: 10px;
+  flex-grow: 2;
 }
 
 .todos{
@@ -46,6 +73,8 @@
     border-radius: 20px;
     background: #e3f2fd;
     color:#24a0ed;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
 }
 
 .fas{
@@ -102,6 +131,15 @@
     box-shadow: 0px 2px 12px -2px #24a0ed;
   }
 
+  .btn{
+    -webkit-box-shadow: 0px 2px 12px -2px #24a0ed;
+    -moz-box-shadow: 0px 2px 12px -2px #24a0ed;
+    box-shadow: 0px 2px 12px -2px #24a0ed; 
+    border-radius: 5px;
+  }
+
+
+
   .icard{
   background: #e3f2fd;
   border-radius: 15px;
@@ -125,7 +163,7 @@
 
   .container {
     position: relative;
-   
+     width:100%;
     
   }
 
@@ -149,5 +187,40 @@
     background-color: #0377fc;
     outline: 1px solid slategrey;
   }
+
+  .fas{
+    cursor:pointer;
+  }
+
+  .toltip .tooltip-inner {
+    background-color: #d8e9ed;
+    font-size: 125%;
+    color: #0377fc;
+    font-family: 'Times New Roman', Times, serif;
+  }
+  .toltip .arrow::before {
+    border-top-color: #d8e9ed;
+  }
+
+@media screen and (min-width: 768px) {
+  .fas{
+    font-size: 2em;
+  }
+  
+}
+
+
+@media only screen and (max-width: 600px) {
+   .icons{
+    font-size: 1em;
+  }
+   
+}
+
+@media only screen and (min-width: 992px) {
+  .icons{
+    font-size: 2em;
+  }
+}
 
 

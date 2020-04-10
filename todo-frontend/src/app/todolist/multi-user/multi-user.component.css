@@ -1,19 +1,12 @@
-@import url(https://fonts.googleapis.com/css?family=Lato:400,700);
-*, *:before, *:after {
-  box-sizing: border-box;
-}
-
-body {
-  background: #C5DDEB;
-  font: 14px/20px "Lato", Arial, sans-serif;
-  padding: 40px 0;
-  color: white;
-}
 
 .container-fluid{
  
   /* background: #444753;  */
   border-radius: 5px;
+}
+
+.fas{
+  cursor:pointer;
 }
 
 .people-list {
@@ -60,6 +53,7 @@ body {
  margin-top:5%;
   margin-bottom:5%;
   background-color: #e3f2fd;
+  color:black;
   border:none;
   width:100%;
   height:10%;
@@ -247,9 +241,21 @@ button:focus {
 
 }
 
+.toltip .tooltip-inner {
+  background-color: #d8e9ed;
+  font-size: 125%;
+  color: #0377fc;
+  font-family: 'Times New Roman', Times, serif;
+}
+.toltip .arrow::before {
+  border-top-color: #d8e9ed;
+}
+
+
 .container {
   position: relative;
- 
+  width:100%;
+  height:40%;
   
 }
 

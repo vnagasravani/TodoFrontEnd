@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, ViewEncapsulation } from '@angular/core';
 import { AppServiceService } from 'src/app/app-service.service';
 import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerService } from "ngx-spinner";
@@ -7,11 +7,13 @@ import { Router } from '@angular/router';
 import { SocketserviceService } from 'src/app/socketservice.service';
 import { NgForm } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-multi-user',
   templateUrl: './multi-user.component.html',
   styleUrls: ['./multi-user.component.css'],
+  encapsulation: ViewEncapsulation.None,
   animations: [
     trigger('todos', [
       transition('void => *', [
@@ -43,8 +45,14 @@ export class MultiUserComponent implements OnInit {
   public itemId;
   public subItemId;
   public userFilter =  {name : ''};
-  public display = false;
-  public mdisplay= true;
+  public display:Boolean = false;
+  public mdisplay :Boolean= true;
+  public create:Subscription;
+  public update:Subscription;
+  public delete:Subscription;
+  public undos:Subscription;
+  public err:Subscription;
+  public  time;
 
   constructor(private AppService: AppServiceService,
     private toastr: ToastrService,
@@ -53,6 +61,7 @@ export class MultiUserComponent implements OnInit {
     private spinner: NgxSpinnerService) { }
 
   ngOnInit() {
+    this.isLoggedOut();
     this.spinner.show();
     this.checkStatus();
     this.verifyUserConfirmation();
@@ -62,21 +71,71 @@ export class MultiUserComponent implements OnInit {
     this.getFriendUpdate();
     this.deleteFriendTodoResponse();
     this.undoResponse();
+    this.errOccured();
   }
+
+
+  ngOnDestroy(){
+
+    if(this.create)
+    this.create.unsubscribe();
+
+    if(this.update)
+    this.update.unsubscribe();
+
+    if(this.delete)
+    this.delete.unsubscribe();
+
+    if(this.undos)
+    this.undos.unsubscribe();
+    
+    if(this.err)
+    this.err.unsubscribe();
+
+    if(this.time)
+    clearInterval(this.time);
+    
+  }
+ 
 
   @HostListener('document:keydown.control.z', ['$event']) onKeydownHandler(event: KeyboardEvent) {
     this.SocketService.undo(this.currentUserId);
     event.preventDefault();
 }
 
+public check = ()=>{ 
+  console.log('check is running');
+  if(!this.AppService.getUserInfo())
+{
+  
+  Cookie.delete('AuthToken');
+
+        Cookie.delete('userId');
+
+        Cookie.delete('userName');
+
+        Cookie.delete('email');
+
+        localStorage.clear();
+  this.router.navigate(['/login']);
+}
+}//end check
+
+public isLoggedOut = ()=>{
+ this.time = setInterval(() => {
+    this.check();
+  }, 500);
+}//end isLoggedOut
+
+
   public undo = ()=>{
     console.log('in undo')
     this.SocketService.undo(this.currentUserId);
+  }//end undo
 
-  }
 
   public undoResponse = () =>{
-    this.SocketService.undoResponse().subscribe(
+   this.undos = this.SocketService.undoResponse().subscribe(
       (data)=>{
         console.log('undo response',data);
         if(data.userId == this.currentUserId)
@@ -98,33 +157,26 @@ export class MultiUserComponent implements OnInit {
       }
       }
     )
-  }
+  }// end UndoResponse
 
-  public error = ()=>{
-    this.SocketService.errOccured().subscribe(
-      (data)=>{
-        this.toastr.error(data.message);
-        console.log('error',data);
-      }
-    )
-  }
+
 
   public getTodoId = (todoId) => {
     this.todoId = todoId;
-  }
+  }//end getTodoId
 
   public getTodo = (todo) => {
     this.currentTodo = todo;
     console.log('current todo', this.currentTodo);
-  }
+  }//end getTodo
 
   public getItemId = (itemId) => {
     this.itemId = itemId;
-  }
+  }//end  getItemId
 
   public getSubItemId = (subItemId) => {
     this.subItemId = subItemId;
-  }
+  }//end getSubItemId
 
   public checkStatus: any = () => {
     if (Cookie.get('AuthToken') === undefined || Cookie.get('AuthToken') === '' || Cookie.get('AuthToken') === null) {
@@ -138,14 +190,12 @@ export class MultiUserComponent implements OnInit {
   public verifyUserConfirmation: any = () => {
     console.log('verify user confirmation is called');
     this.SocketService.verifyUser().subscribe(data => {
-
     });
   }//end verifyUserConfirmation
 
   public setUser = () => {
     console.log('currentUserId',this.currentUserId);
     this.SocketService.setuser(Cookie.get('AuthToken'));
-
   }//end setUser
 
   public getUser = () => {
@@ -155,8 +205,11 @@ export class MultiUserComponent implements OnInit {
         this.friends = this.userDetails.friendList.filter(user => user.active == true);
         console.log('friends', this.friends);
         console.log('user details', this.userDetails);
-      })
-  }
+      },
+      (err)=>{
+        this.router.navigate(['/error']);
+      })   
+  }//end getUser
 
   public getTodos = (friend) => {
     this.display = true;
@@ -183,12 +236,18 @@ export class MultiUserComponent implements OnInit {
       },
       (err) => {
         this.currentUserTodos = [];
-        this.toastr.error('some error occured');
+        this.router.navigate(['/error']);
       }
     )
-  }
+  }//end getTodos 
 
   public createFriendTodo = (todoName, form: NgForm) => {
+    if(todoName == '' || todoName==undefined || todoName == null)
+  {
+    this.toastr.warning('enter todo Title ')
+  }
+  else
+  {
     let todoDetail = {
       todoTitle: todoName,
       userId: this.currentUserId,
@@ -199,6 +258,7 @@ export class MultiUserComponent implements OnInit {
     this.SocketService.createFriendList(todoDetail);
     form.reset();
   }
+  }//end createFriendTodo
 
   public deleteFriendTodo = (todo) => {
     let todoDetail = {
@@ -213,6 +273,12 @@ export class MultiUserComponent implements OnInit {
   }
 
   public updateFriendTodo = (todoName, form: NgForm) => {
+    if(todoName == '' || todoName==undefined || todoName == null)
+  {
+    this.toastr.warning('enter todo Title ')
+  }
+  else
+  {
     let todoDetail = {
       todoId: this.todoId,
       todo: this.currentTodo,
@@ -224,8 +290,15 @@ export class MultiUserComponent implements OnInit {
     this.SocketService.updateFriendTodo(todoDetail);
     form.reset();
   }
+  }//end deleteFriendTodo
 
   public addFriendItem = (taskName, form: NgForm) => {
+    if(taskName == '' || taskName==undefined || taskName== null)
+  {
+    this.toastr.warning('enter Task Title ');
+  }
+  else
+  {
     let itemDetail = {
       todoId: this.todoId,
       itemName: taskName,
@@ -237,6 +310,7 @@ export class MultiUserComponent implements OnInit {
     this.SocketService.addFriendItem(itemDetail);
     form.reset();
   }
+  }//end addFriendItem
 
   public deleteFriendItem = (itemId) => {
     let data = {
@@ -249,9 +323,15 @@ export class MultiUserComponent implements OnInit {
     }
     this.SocketService.deleteFriendItem(data);
 
-  }
+  }//end deleteFriendItem
 
   public updateFriendItem = (taskName, form: NgForm) => {
+    if(taskName == '' || taskName==undefined || taskName== null)
+    {
+      this.toastr.warning('enter Task Title ');
+    }
+    else
+    {
     let data = {
       itemName: taskName,
       itemId: this.itemId,
@@ -263,10 +343,16 @@ export class MultiUserComponent implements OnInit {
     }
     this.SocketService.updateFriendItem(data);
     form.reset();
-
   }
+  }//end updateFriendItem
 
   public addFriendSubItem = (subtaskName, form: NgForm) => {
+    if(subtaskName == '' || subtaskName==undefined || subtaskName== null)
+    {
+      this.toastr.warning('enter Task Title ');
+    }
+    else
+    {
     let subItemDetail = {
       itemId: this.itemId,
       subTaskName: subtaskName,
@@ -279,8 +365,15 @@ export class MultiUserComponent implements OnInit {
     this.SocketService.addFriendSubItem(subItemDetail);
     form.reset();
   }
+  }//end addFriendSubItem
 
   public updateFriendSubItem = (subtaskName, form: NgForm) => {
+    if(subtaskName == '' || subtaskName==undefined || subtaskName== null)
+    {
+      this.toastr.warning('enter Task Title ');
+    }
+    else
+    {
     let data = {
       subItemName : subtaskName ,
       itemId : this.itemId,
@@ -294,6 +387,7 @@ export class MultiUserComponent implements OnInit {
     this.SocketService.updateFriendSubItem(data);
      form.reset();
   }
+  }//end updateFriendSubItem 
 
   public deleteFriendSubItem = (subItemId)=>{
     let data ={
@@ -305,7 +399,7 @@ export class MultiUserComponent implements OnInit {
       otherUser:Cookie.get('userName')
     }
     this.SocketService.deleteFriendSubItem(data);
-  }
+  }//end deleteFriendSubItem
 
   public completeFriendTodo = (todo)=>{
     let data={
@@ -316,7 +410,7 @@ export class MultiUserComponent implements OnInit {
       otherUser:Cookie.get('userName')
     }
     this.SocketService.completeFriendTodo(data);
-  }
+  }//end completeFriendTodo
   
   public recompleteFriendTodo = (todo)=>{
     let data={
@@ -328,7 +422,7 @@ export class MultiUserComponent implements OnInit {
 
     }
     this.SocketService.recompleteFriendTodo(data);
-  }
+  }//end recompleteFriendTodo
   
   public completeFriendItem = (todo,itemId)=>{
     let data={
@@ -340,7 +434,7 @@ export class MultiUserComponent implements OnInit {
       otherUser:Cookie.get('userName')
     }
     this.SocketService.completeFriendItem(data);
-  }
+  }//end completeFriendItem
   
   public recompleteFriendItem = (todo,itemId)=>{
     let data={
@@ -352,7 +446,7 @@ export class MultiUserComponent implements OnInit {
       otherUser:Cookie.get('userName')
     }
     this.SocketService.recompleteFriendItem(data);
-  }
+  }//end recompleteFriendItem
   
   
   
@@ -369,7 +463,7 @@ export class MultiUserComponent implements OnInit {
     console.log('complete sub item',data);
     this.SocketService.completeFriendSubItem(data);
     
-  }
+  }//end completeFriendSubItem
   
   public recompleteFriendSubItem = (todo,itemId,subItemId)=>{
     let data={
@@ -383,11 +477,11 @@ export class MultiUserComponent implements OnInit {
     }
     console.log('complete sub item',data);
     this.SocketService.recompleteFriendSubItem(data);
-  }
+  }//end recompleteFriendSubItem
   
 
   public createFriendTodoResponse = () => {
-    this.SocketService.getFriendCreateTodo().subscribe(
+   this.create =  this.SocketService.getFriendCreateTodo().subscribe(
       (data) => {
         console.log('createFriendTodoResponse', data);
         console.log(this.currentUserId, data.todo.userId);
@@ -399,10 +493,10 @@ export class MultiUserComponent implements OnInit {
         this.toastr.info(data.msg);
       }
     )
-  }
+  }//end createFriendTodoResponse
 
   public getFriendUpdate = () => {
-    this.SocketService.getFriendUpdate().subscribe(
+  this.update =  this.SocketService.getFriendUpdate().subscribe(
       (data) => {
         console.log('getFriendTodoResponse', data);
         console.log(this.currentUserId, data.todo.userId);
@@ -413,11 +507,10 @@ export class MultiUserComponent implements OnInit {
        this.toastr.info(data.msg);
       }
     )
-
-  }
+  }//end  getFriendUpdate
 
   public deleteFriendTodoResponse = () => {
-    this.SocketService.getFriendDeleteTodo().subscribe(
+   this.delete = this.SocketService.getFriendDeleteTodo().subscribe(
       (data) => {
        
         console.log('getFriendDeleteTodoResponse', data);
@@ -429,7 +522,16 @@ export class MultiUserComponent implements OnInit {
         this.toastr.info(data.msg);
       }
     )
-  }
+  }//end deleteFriendTodoResponse
+
+  public errOccured = () =>{
+   this.err = this.SocketService.errOccured().subscribe(
+      (data)=>{
+        this.toastr.warning(data.message );
+        console.log(data.data);
+      }
+    )
+  }//end errOccured 
 
 
 

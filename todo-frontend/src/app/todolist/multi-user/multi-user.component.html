@@ -1,19 +1,20 @@
 <div class="container-fluid d-none d-lg-block  d-xl-block clearfix">
   <nav class="navbar navbar-expand-lg navbar-light rounded-pill " style="background-color: #e3f2fd;overflow: hidden;">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <button class="navbar-toggler btn btn-outline-info" type="button" data-toggle="collapse"
+      data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+      aria-label="Toggle navigation">
+      <i class="fas fa-bars" style="color: #189bba; "></i>
+  </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item ">
-          <a class="nav-link " style="color: #24a0ed;cursor: pointer;" routerLink="/user">Home</a>
+          <a class="nav-link btn btn-outline-info rounded-pill " style="color: #24a0ed;cursor: pointer; border:none;" routerLink="/user">Home <i class="fas fa-archway" style="color: #24a0ed; font-size:1em;"></i></a>
         </li>
       </ul>
       <h4 style="color: #24a0ed;"><strong>Friend's Todos</strong></h4>
       <ul class="navbar-nav ml-auto">
         <li class="nav-item ">
-          <a class="nav-link " style="color: #24a0ed;cursor: pointer;" routerLink="/list">People</a>
+          <a class="nav-link btn btn-outline-info rounded-pill " style="color: #24a0ed;cursor: pointer; border:none; " routerLink="/list">People  <i class="fas fa-users" style="color: #24a0ed; font-size:1em;"></i></a>
         </li>
       </ul>
     </div>
@@ -29,11 +30,13 @@
           <input type="search" [(ngModel)]="userFilter.name" placeholder="search friend here..."
             style="margin-top: 10px; margin-left:10px;">
           <ul>
-            <li class="rounded-pill text-center animate" [@todos] *ngFor="let friend of friends | filterBy: userFilter"
-              (click)="loading='false';getTodos(friend);">{{ friend?.name | titlecase }}</li>
+            <li class="rounded-pill text-center animate " [@todos] *ngFor="let friend of friends | filterBy: userFilter"
+              (click)="loading=false;getTodos(friend);">{{ friend?.name | titlecase }}</li>
 
             <!-- in case you want to show empty message -->
-            <li *ngIf="(friends | filterBy: userFilter).length === 0">No matching elements</li>
+            <h3 *ngIf=" friends.length==0" style="margin-left: 17%;margin-top: 82%;">No Friends</h3>
+
+            <li *ngIf="(friends | filterBy: userFilter).length === 0 && friends.length!=0">No matching elements</li>
           </ul>
         </div>
       </div>
@@ -51,8 +54,8 @@
               <div *ngIf="todoCount==0" class="chat-num-messages">No todos found</div>
 
             </div>
-            <i class="fas fa-undo-alt" (click)="undo()"></i>
-            <span data-toggle="modal" data-target="#exampleModal"> <i class="fas fa-plus-circle"></i> </span>
+            <i class="fas fa-undo-alt" (click)="undo()"  placement="bottom" ngbTooltip="click to undo actions" tooltipClass="toltip"></i>
+            <span data-toggle="modal" data-target="#exampleModal"> <i class="fas fa-plus-circle"  placement="bottom" ngbTooltip="click to add todo" tooltipClass="toltip"></i> </span>
           </div> <!-- end chat-header -->
 
           <div>
@@ -66,16 +69,16 @@
                 <td>
                   <li class="list-group-item py-3 animate">
                     <span *ngIf="!todo.complete" class="buttonc" (click)="completeFriendTodo(todo)"><i
-                        class="far fa-circle"></i></span>
+                        class="far fa-circle" style="font-size: 1em;"></i></span>
                     <span *ngIf="todo.complete" class="buttonc" (click)="recompleteFriendTodo(todo)"><i
-                        class="fas fa-check-circle"></i></span>
+                        class="fas fa-check-circle" style="font-size: 1em;"></i></span>
 
                     {{todo.todoTitle}}
                     <span class="button" data-toggle="modal" data-target="#addItemModal"
-                      (click)="getTodoId(todo.todoId);getTodo(todo)"><i class="fas fa-plus-circle"></i></span>
-                    <span class="button" (click)="deleteFriendTodo(todo)"><i class="fas fa-trash"></i></span>
+                      (click)="getTodoId(todo.todoId);getTodo(todo)"><i class="fas fa-plus-circle" style="font-size: 1em;"></i></span>
+                    <span class="button" (click)="deleteFriendTodo(todo)"><i class="fas fa-trash" style="font-size: 1em;"></i></span>
                     <span class="button" data-toggle="modal" data-target="#updateTodoModal"
-                      (click)="getTodoId(todo.todoId);getTodo(todo);saveTodo(todo)"><i class="fas fa-pen"></i></span>
+                      (click)="getTodoId(todo.todoId);getTodo(todo)"><i class="fas fa-pen" style="font-size: 1em;"></i></span>
                   </li>
                 </td>
               </tr>
@@ -83,34 +86,34 @@
                 <td>
                   <li class="list-group-item py-2 animate task">
                     <span *ngIf="!item.itemComplete" class="buttonc" (click)="completeFriendItem(todo,item.itemId)"><i
-                        class="far fa-circle"></i></span>
+                        class="far fa-circle" style="font-size: 1em;"></i></span>
                     <span *ngIf="item.itemComplete" class="buttonc" (click)="recompleteFriendItem(todo,item.itemId)"><i
-                        class="fas fa-check-circle"></i></span>
+                        class="fas fa-check-circle" style="font-size: 1em;"></i></span>
                     {{item?.itemName}}
                     <span class="button" data-toggle="modal" data-target="#addSubItemModal"
                       (click)="getItemId(item.itemId);getTodoId(todo.todoId);getTodo(todo)"><i
-                        class="fas fa-plus-circle"></i></span>
+                        class="fas fa-plus-circle" style="font-size: 1em;"></i></span>
                     <span class="button" (click)="deleteFriendItem(item.itemId);getTodoId(todo.todoId);getTodo(todo)"><i
-                        class="fas fa-trash"></i></span>
+                        class="fas fa-trash" style="font-size: 1em;"></i></span>
                     <span class="button" data-toggle="modal" data-target="#updateItemModal"
                       (click)="getItemId(item.itemId);getTodoId(todo.todoId);getTodo(todo)"><i
-                        class="fas fa-pen"></i></span>
+                        class="fas fa-pen" style="font-size: 1em;"></i></span>
                   </li>
                   <div *ngFor="let subItem of item?.subItemList" class="subtask">
                     <li class="list-group-item py-1 animate subtask">
                       <span *ngIf="!subItem.subItemComplete" class="buttonc"
                         (click)="completeFriendSubItem(todo,item.itemId,subItem.subItemId)"><i
-                          class="far fa-circle"></i></span>
+                          class="far fa-circle" style="font-size: 1em;"></i></span>
                       <span *ngIf="subItem.subItemComplete" class="buttonc"
                         (click)="recompleteFriendSubItem(todo,item.itemId,subItem.subItemId)"><i
-                          class="fas fa-check-circle"></i></span>
+                          class="fas fa-check-circle" style="font-size: 1em;"></i></span>
                       {{subItem?.subItemName}}
                       <span class="button"
                         (click)="deleteFriendSubItem(subItem.subItemId);getTodoId(todo.todoId);getTodo(todo)">
-                        <i class="fas fa-trash"></i></span>
+                        <i class="fas fa-trash" style="font-size: 1em;"></i></span>
                       <span class="button" data-toggle="modal" data-target="#updateSubItemModal"
                         (click)="getItemId(item.itemId); getSubItemId(subItem.subItemId);getTodoId(todo.todoId);getTodo(todo)"><i
-                          class="fas fa-pen"></i></span>
+                          class="fas fa-pen" style="font-size: 1em;"></i></span>
                     </li>
                   </div>
                 </td>
@@ -133,17 +136,18 @@
 <div class="d-lg-none">
   <nav class="navbar navbar-expand-lg navbar-light  " style="background-color: #e3f2fd;overflow: hidden;">
     <h4 class="navbar-brand" style="color: #24a0ed;"><strong>Friend's Todos</strong></h4>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <button class="navbar-toggler btn btn-outline-info" type="button" data-toggle="collapse"
+    data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+    aria-label="Toggle navigation">
+    <i class="fas fa-bars" style="color: #189bba; "></i>
+</button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item ">
-          <a class="nav-link " style="color: #24a0ed;cursor: pointer;" routerLink="/user">Home</a>
+          <a class="nav-link btn btn-outline-info rounded-pill" style="color: #24a0ed;border:none" routerLink="/user">Home <i class="fas fa-archway" style="color: #24a0ed; font-size:1em;"></i></a>
         </li>
         <li class="nav-item ">
-          <a class="nav-link " style="color: #24a0ed;cursor: pointer;" routerLink="/list">People</a>
+          <a class="nav-link btn btn-outline-info rounded-pill" style="color: #24a0ed;border:none" routerLink="/list">People <i class="fas fa-users" style="color: #24a0ed; font-size:1em;"></i></a>
         </li>
       </ul>
     </div>
@@ -156,10 +160,21 @@
       style="margin-top: 10px; margin-left:8%;">
     <ul>
       <li class="rounded-pill text-center animate" style="margin-left: 4%;" [@todos]
-        *ngFor="let friend of friends | filterBy: userFilter" (click)="loading='false';getTodos(friend)">{{ friend?.name | titlecase }}
+        *ngFor="let friend of friends | filterBy: userFilter" (click)="loading=false;getTodos(friend)">{{ friend?.name | titlecase }}
       </li>
+
+      <div *ngIf=" friends.length==0">
+        <br><br><br><br><br><br>
+      </div>
+      <div class="row" *ngIf=" friends.length==0">
+        <div class="alert alert-info rounded-pill m-auto" role="alert">
+          <h3  >No Friends</h3>
+         </div> 
+       </div>
+      
+
       <!-- in case you want to show empty message -->
-      <li *ngIf="(friends | filterBy: userFilter).length === 0">No matching elements</li>
+      <li *ngIf="(friends | filterBy: userFilter).length === 0 && friends.length!=0">No matching elements</li>
     </ul>
   </div>
   <div *ngIf="!mdisplay" class="container set">
@@ -174,8 +189,9 @@
             <div *ngIf="todoCount==0" class="chat-num-messages">No todos found</div>
 
           </div>
-          <i class="fas fa-undo-alt" (click)="undo()"></i>
+         
           <span data-toggle="modal" data-target="#exampleModal"> <i class="fas fa-plus-circle"></i> </span>
+           <i class="fas fa-undo-alt" (click)="undo()"></i>
         </div> <!-- end chat-header -->
 
         <div>
@@ -198,7 +214,7 @@
                     (click)="getTodoId(todo.todoId);getTodo(todo)"><i class="fas fa-plus-circle"></i></span>
                   <span class="button" (click)="deleteFriendTodo(todo)"><i class="fas fa-trash"></i></span>
                   <span class="button" data-toggle="modal" data-target="#updateTodoModal"
-                    (click)="getTodoId(todo.todoId);getTodo(todo);saveTodo(todo)"><i class="fas fa-pen"></i></span>
+                    (click)="getTodoId(todo.todoId);getTodo(todo)"><i class="fas fa-pen"></i></span>
                 </li>
               </td>
             </tr>

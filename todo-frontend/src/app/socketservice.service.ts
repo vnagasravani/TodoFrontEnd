@@ -15,7 +15,7 @@ export class SocketserviceService {
   private socket;
 
   constructor(public http: HttpClient) {
-    this.socket = io('http://localhost:3000');
+    this.socket = io('http://ec2-18-219-5-23.us-east-2.compute.amazonaws.com:3000');
   }
 
   //events to be listened
@@ -191,7 +191,7 @@ export class SocketserviceService {
       })
 
     })
-  }
+  }//end rejectedRequest
 
 
 
@@ -414,6 +414,7 @@ export class SocketserviceService {
   }//end sendRequest
 
   public acceptRequest = (data) => {
+    console.log('accept request is emitted');
     this.socket.emit('accept-request', data);
   }//end acceptRequest
 

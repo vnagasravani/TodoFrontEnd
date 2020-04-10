@@ -7,6 +7,7 @@ import { Cookie } from 'ng2-cookies/ng2-cookies';
 import { SocketserviceService } from 'src/app/socketservice.service';
 import { User } from '../../../../../Interfaces/user';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-friend',
@@ -35,7 +36,6 @@ export class FriendComponent implements OnInit {
   public users:Array<User> = [];
   public userDetails ;
   public friendRequests = [];
- // public displayedUsers = [];
   public searchedUsers = [];
   public loading = true;
   public searchingValue = '';
@@ -43,6 +43,14 @@ export class FriendComponent implements OnInit {
   public limit = 8;
   public Usercount;
   public searching = false;
+  public accept:Subscription;
+  public reject:Subscription;
+  public err:Subscription;
+  public unfriendSub: Subscription;
+  public unfriendAckSub:Subscription;
+  public sendSub: Subscription;
+  public time;
+  
   
 
 
@@ -56,6 +64,7 @@ export class FriendComponent implements OnInit {
 
 
   ngOnInit() {
+    this.isLoggedOut();
     this.spinner.show();
     this.getUsers(this.pageValue,this.limit);
     this.getUser();
@@ -64,49 +73,79 @@ export class FriendComponent implements OnInit {
     this.errOccured();
     this.unfriendAck();
     
-
   }
 
-  // public getDisplayedUsers = ()=>{
-  //   console.log(this.users[0].userId)
-  //   console.log('userdetails userId',Cookie.get('userId'));
-  //   for(let i=0; i<this.users.length;i++) {
-  //     console.log(this.users[i].userId)
+  ngOnDestroy(){
+
+    if(this.accept)
+    this.accept.unsubscribe();
+
+    if(this.reject)
+    this.reject.unsubscribe();
+
+    if(this. unfriendSub)
+    this. unfriendSub.unsubscribe();
+
+    if(this.unfriendAckSub)
+    this.unfriendAckSub.unsubscribe();
+
+    if(this.sendSub)
+    this.sendSub.unsubscribe();
     
-  //    let user:User = this.users[i] ;
-  //     if( Cookie.get('userId') != user.userId)
-  //     {
-  //       this.displayedUsers.push(this.users[i]);
+    if(this.err)
+    this.err.unsubscribe();
 
-  //     }
-  //   }
-  //   console.log('after splicing',this.displayedUsers);
-   
-  // }
+    if(this.time)
+    clearInterval(this.time);
+    
+  }
 
+  public check = ()=>{ 
+    console.log('check is running');
+    if(!this.AppService.getUserInfo())
+  {
+        Cookie.delete('AuthToken');
+
+        Cookie.delete('userId');
+
+        Cookie.delete('userName');
+
+        Cookie.delete('email');
+
+        localStorage.clear();
+    this.router.navigate(['/login']);
+  }
+  }//end check
+
+  public isLoggedOut = ()=>{
+   this.time = setInterval(() => {
+      this.check();
+    }, 500);
+  }//end isLoggedOut
 
 
   public checkRequestSent = (user)=>{
-   
     if(this.userDetails && this.userDetails.friendList && this.userDetails.friendList.findIndex(friend=>friend.id===user.userId && friend.active===false)==-1)
     return false;
     return true;
-  }
+  }//end checkRequestSent
 
   public checkFriend = (user)=>{
     if(this.userDetails && this.userDetails.friendList && this.userDetails.friendList.findIndex(friend=>friend.id===user.userId && friend.active===true)==-1)
     return false;
     return true;
-
-  }
+  }//end checkFriend
 
   public getUser = () =>{
   this.AppService.getUser().subscribe(
     (data)=>{
       this.userDetails = data.data;
       console.log('user details',this.userDetails);
+  },
+  (err)=>{
+    this.router.navigate(['/error']);
   })
-  }
+  }//end getUser
 
 public getUsers = (pageValue, limit)=>{
   let data = {
@@ -120,12 +159,22 @@ public getUsers = (pageValue, limit)=>{
      console.log('getuser responses is called ')
     if (data.status == 200) {
               this.loading = false;
+
+              
               
               this.users = data.data.users;
+              console.log(data.data.users.length,this.users.length);
               
               this.Usercount = data.data.userCount;
               console.log('usercount',this.Usercount);
-              this.users.splice(this.users.findIndex(user => user.userId === Cookie.get('userId')), 1)
+              let index = this.users.findIndex(user => user.userId === Cookie.get('userId'))
+              if(index != -1)
+              {
+              let obj =  this.users.splice(index, 1);
+              console.log('removed user',obj);
+              }
+            
+              console.log(data.data.users,this.users.length);
              }
              else
          {
@@ -135,39 +184,7 @@ public getUsers = (pageValue, limit)=>{
    }
  )
 
-}
-
-
-
-
-  // public getUsers = (pageValue, limit) => {
-  //   this.AppService.getAllUsers(pageValue, limit).subscribe(
-  //     (data) => {
-        
-  //       if (data.status == 200) {
-  //         this.loading = false;
-  //         this.users = data.data.users;
-  //         console.log('all users',this.users);
-  //         this.users.splice(this.users.findIndex(user => user.userId === Cookie.get('userId')), 1)
-          
-          
-  //         console.log('after splicing',this.users);
-  //         this.Usercount = data.data.userCount;
-  //        }
-  //        else if(data.status==300){
-  //         this.toastr.error('unauthorized access');
-  //         this.router.navigate(['/login']);
-  //        }
-  //        else
-  //       {
-  //         this.toastr.error(data.message);
-  //       }
-  //     },
-  //     (err) => {
-  //       console.log(err);
-  //       this.toastr.error('some error occured');
-  //     });
-  // }//end getUsers
+}//end getUsers
 
   public sendRequest = (user)=>{
     let data = {
@@ -178,45 +195,43 @@ public getUsers = (pageValue, limit)=>{
     }
     console.log('send request',user);
    this.socketService.sendRequest(data);
-   this.socketService.sendRequestResponse().subscribe(
+  this.sendSub = this.socketService.sendRequestResponse().subscribe(
      (data)=>{
       this.userDetails = data;
        console.log(data);
      }
    )
-  }
+  }//end sendRequest
 
   public errOccured = () =>{
-    this.socketService.errOccured().subscribe(
+  this.err =  this.socketService.errOccured().subscribe(
       (data)=>{
         this.toastr.warning(data.message );
         console.log(data.data);
       }
     )
-  }
+  }//end errOccured
 
   public acceptedRequest = () =>{
-    this.socketService.acceptedRequest().subscribe(
+  this.accept =  this.socketService.acceptedRequest().subscribe(
       (data)=>{
          console.log(data);
          let i = this.userDetails.friendList.findIndex(user=>user.id == data.recieverId);
          this.userDetails.friendList[i].active = true;
          console.log(this.userDetails);
-
       }
     )
-  }
+  }//end acceptedRequest
 
   public rejectedRequest = () =>{
-    this.socketService.rejectedRequest().subscribe(
+   this.reject =  this.socketService.rejectedRequest().subscribe(
       (data)=>{
         console.log(data);
          let i = this.userDetails.friendList.findIndex(user=>user.id == data.recieverId);
-         this.userDetails.friendList.splice(i,1);
-        
+         this.userDetails.friendList.splice(i,1);  
       }
     )
-  }
+  }//end  rejectedRequest
 
   public unfriend = (user)=>{
     let data = {
@@ -224,27 +239,26 @@ public getUsers = (pageValue, limit)=>{
       friendId : user.userId
     }
     this.socketService.unfriend(data);
-    this.socketService.unfriendResponse().subscribe(
+  this.unfriendSub =  this.socketService.unfriendResponse().subscribe(
       (data)=>{
         this.userDetails = data;
        console.log('unfriend response',data);
       }
     )
-  }
+  }//end unfriend
 
   public unfriendAck = ()=>{
-    this.socketService.unfriendAck().subscribe(
+   this.unfriendAckSub =  this.socketService.unfriendAck().subscribe(
       (data)=>{
         console.log('unfriendAck',data);
         this.userDetails = data;
       }
     )
-  }
+  }//end  unfriendAck 
 
   public search = () => {
     console.log('in search',this.searchingValue);
     this.searching = true;
-    //this.searchingValue = this.searchInput.nativeElement.value + data.key;
     this.socketService.searchPeople(this.searchingValue);
     this.searchResult();
   } //end search

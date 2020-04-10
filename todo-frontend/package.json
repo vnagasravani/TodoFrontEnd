@@ -21,6 +21,8 @@
     "@angular/router": "~8.2.14",
     "@fortawesome/angular-fontawesome": "^0.6.0",
     "@fortawesome/fontawesome-free": "^5.12.1",
+    "@ng-bootstrap/ng-bootstrap": "^5.3.0",
+    "@trademe/ng-defer-load": "^8.0.0",
     "angular-font-awesome": "^3.1.2",
     "bootstrap": "^4.4.1",
     "font-awesome": "^4.7.0",

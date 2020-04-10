@@ -37,7 +37,7 @@ export class SignupComponent implements OnInit {
 
   public goToSignIn(){
     this.route.navigate(['/']);
-  }
+  }//end goToSignIn
 
   public getCountries = ()=>{
     this.appService.getCountryNames().subscribe(
@@ -65,11 +65,12 @@ export class SignupComponent implements OnInit {
       })
   }//end  getcountryCodes
 
-  public onChangeOfCountry(){
 
+
+  public onChangeOfCountry(){
     this.countryCode = this.countryCodes[this.country];
     this.countryName = this.allCountries[this.country];
-  }
+  }//end onChangeOfCountry
   
 
   public signupFunction=()=>{
@@ -85,7 +86,10 @@ console.log(data);
     this.appService.signUp(data).subscribe(
       (dataa)=>{console.log(dataa);
         if(dataa.status == 200)
+        {
+        this.toaster.info('registration completed succesfully');
         setTimeout(()=>{this.route.navigate(['/']);},2000);
+        }
         else
         this.toaster.error(dataa.message);
       },
@@ -94,6 +98,6 @@ console.log(data);
         console.log("some error occured");
       }
     )
-  }
+  }//end signupFunction
 
 }

@@ -14,8 +14,6 @@ export class LoginComponent implements OnInit {
   public email:String;
   public password:String;
 
-  
-
   constructor(private appService:AppServiceService,private route:Router,private toaster : ToastrService) { }
 
   ngOnInit() {
@@ -23,16 +21,17 @@ export class LoginComponent implements OnInit {
   }
 
   public goToSignUp(){
-    this.route.navigate(['/sign-up']);
-    
-  }
+    this.route.navigate(['/sign-up']);  
+  }//end goToSignUp
 
 public isLogged = ()=>{
-  if(this.appService.getUserInfo().authToken != '' ||this.appService.getUserInfo().authToken != undefined || this.appService.getUserInfo().authToken != null)
+  console.log('this.appService.getUserInfo()',this.appService.getUserInfo())
+  if(this.appService.getUserInfo() && Cookie.get('AuthToken') == this.appService.getUserInfo().authToken  )
   {
     this.route.navigate(['/user']);
   }
-}
+}//end isLogged
+
   public resetPassword=()=>{
     if(!this.email){
       this.toaster.warning('enter email Id');
@@ -59,13 +58,13 @@ public isLogged = ()=>{
           }
         )
     }
-  }
+  }//end resetPassword
 
 
 
   public forgotPassword = ()=>{
     this.route.navigate(['/forgotpassword']);
-  }
+  }//end forgotPassword
 
 
   public signinFunction(){
@@ -74,6 +73,18 @@ public isLogged = ()=>{
      password:this.password
  
    };
+
+   if(this.email=='' || this.email == undefined )
+   {
+   this.toaster.warning('enter email address')
+   }
+   else if(this.password=='' || this.password == undefined )
+   {
+    this.toaster.warning('enter password');
+
+   }
+   else
+   {
   
    this.appService.login(data).subscribe((data)=>{
 
@@ -84,6 +95,7 @@ public isLogged = ()=>{
      Cookie.set('AuthToken',data.data.authToken);
      Cookie.set('userId',data.data.userId);
      Cookie.set('userName',data.data.userName);
+     this.toaster.info('logged in succesfully');
      this.route.navigate(['/user']);
      }
      else
@@ -95,8 +107,7 @@ public isLogged = ()=>{
    (error)=>{
      console.log(error.message);
    })
-
-
   }
+}// end signinFunction
 
 }

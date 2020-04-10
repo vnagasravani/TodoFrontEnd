@@ -2,6 +2,7 @@ import { NgModule  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
+import { DeferLoadModule } from '@trademe/ng-defer-load';
 
 import {FormsModule,ReactiveFormsModule} from '@angular/forms'
 import { UserRoutingModule } from './user-routing.module';
@@ -16,6 +17,7 @@ import { ToastrModule } from 'ngx-toastr';
   imports: [
     CommonModule,
     FormsModule,
+    DeferLoadModule ,
     ToastrModule.forRoot(),
     ReactiveFormsModule,
     UserRoutingModule

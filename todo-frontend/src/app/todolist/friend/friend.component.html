@@ -1,80 +1,95 @@
-
 <div class="container set">
     <div class="card">
-        <div class="card-header header rounded-pill">
-            PEOPLE
+        <div class="card-header" style="height:15%;background-color: #e3f2fd;">
+            <div class="row">
+                <div class=" btn btn-outline-info rounded-pill text-center" style="margin-right:10%; margin-top:7px; "
+                    [routerLink]="['/friend',userDetails?.userId]">
+                    <i class="fas fa-chevron-left" style="color: #24a0ed; font-size:1em; "></i> Back
+                </div>
+                <div class="header text-center margini ">
+                    People
+                </div>
+            </div>
+
+
         </div>
         <div *ngIf="loading">
-            <ngx-spinner type="pacman" size = "medium"></ngx-spinner>
-            </div>
+            <ngx-spinner type="pacman" size="medium"></ngx-spinner>
+        </div>
         <div class="card-body">
             <div class="search">
-                <input id="searchbox" class="rounded-pill" (keyup.enter)="search()" [(ngModel)]="searchingValue" type="text" placeholder="search people here...">
-                <span *ngIf="searchingValue!=''"
-                id="clear" (click)="unsearch()" class="fa fa-times-circle" style="color:#24a0ed"></span>
+                <input id="searchbox" class="rounded-pill" (keyup.enter)="search()" [(ngModel)]="searchingValue"
+                    type="text" placeholder="search people...">
+                <span *ngIf="searchingValue!=''" id="clear" (click)="unsearch()" class="fa fa-times-circle"
+                    style="color:#24a0ed"></span>
 
-              </div>
+            </div>
 
             <div class="row cardsbody" *ngIf="!searching" [@users]>
-                <div class=" col-lg-4 col-md-5 col-10 cards"  *ngFor="let user of users">
-                    <div class="card icard" >
+                <div class=" col-lg-4 col-md-5 col-10 cards" *ngFor="let user of users">
+                    <div class="card icard">
                         <div class="card-body">
                             <h5 class="card-title">{{user.userName}}</h5>
                             <p>{{user.email}}</p>
-                            <div *ngIf = "!checkRequestSent(user) && !checkFriend(user)">
-                            <button class="btn btn-primary rounded-pill" (click)="sendRequest(user);">Add Friend</button>
+                            <div *ngIf="!checkRequestSent(user) && !checkFriend(user)">
+                                <button class="btn btn-primary rounded-pill" (click)="sendRequest(user);">Add
+                                    Friend</button>
                             </div>
-                            <div *ngIf = "checkRequestSent(user) && !checkFriend(user)">
-                            <button class="btn btn-primary rounded-pill disabled ">Request Sent</button>
+                            <div *ngIf="checkRequestSent(user) && !checkFriend(user)">
+                                <button class="btn btn-primary rounded-pill disabled ">Request Sent</button>
                             </div>
-                            <div *ngIf = "!checkRequestSent(user) && checkFriend(user)">
+                            <div *ngIf="!checkRequestSent(user) && checkFriend(user)">
                                 <button class="btn btn-primary rounded-pill" (click)="unfriend(user)">unfriend</button>
-                             </div>
-                         </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
             </div>
 
 
-            <div class="row cardsbody" >
-                <div class=" col-lg-4 col-md-5 col-sm-5 col-10 cards" [@users]  *ngFor="let user of searchedUsers">
-                    <div class="card icard" >
+            <div class="row cardsbody">
+                <div class=" col-lg-4 col-md-5 col-sm-5 col-10 cards" [@users] *ngFor="let user of searchedUsers">
+                    <div class="card icard">
                         <div class="card-body">
                             <h5 class="card-title">{{user.userName}}</h5>
                             <p>{{user.email}}</p>
-                            <div *ngIf = "!checkRequestSent(user) && !checkFriend(user)">
-                            <button class="btn btn-primary rounded-pill" (click)="sendRequest(user);">Add Friend</button>
+                            <div *ngIf="!checkRequestSent(user) && !checkFriend(user)">
+                                <button class="btn btn-primary rounded-pill" (click)="sendRequest(user);">Add
+                                    Friend</button>
                             </div>
-                            <div *ngIf = "checkRequestSent(user) && !checkFriend(user)">
-                            <button class="btn btn-primary disabled rounded-pill"> Request Sent</button>
+                            <div *ngIf="checkRequestSent(user) && !checkFriend(user)">
+                                <button class="btn btn-primary disabled rounded-pill"> Request Sent</button>
                             </div>
-                            <div *ngIf = "!checkRequestSent(user) && checkFriend(user)">
+                            <div *ngIf="!checkRequestSent(user) && checkFriend(user)">
                                 <button class="btn btn-primary rounded-pill" (click)="unfriend(user)">unfriend</button>
-                             </div>
-                         </div>
-                    </div> 
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
 
-            
 
-            <div *ngIf = "searching && searchedUsers.length==0 " class=" col-md-8 noFound alert alert-info rounded-pill m-auto text-center" style="width:50%;margin-top:100%" role="alert">
+
+            <div *ngIf="searching && searchedUsers.length==0 "
+                class=" col-md-8 noFound alert alert-info rounded-pill m-auto text-center"
+                style="width:50%;margin-top:100%" role="alert">
                 <h3><b>No user Found</b></h3>
-              </div>
+            </div>
 
 
 
-            <div *ngIf = "!searching"> 
-            <span> <button  class="btn btn-primary left " (click)="getPrevPages()" [disabled]="pageValue==0">prev</button> </span>
-             <span><button  class="btn btn-primary right" (click)="getNextPages()"  [disabled]="checkNext()">next</button></span>
+            <div *ngIf="!searching">
+                <span> <button class="btn btn-primary left " (click)="getPrevPages()"
+                        [disabled]="pageValue==0">prev</button> </span>
+                <span><button class="btn btn-primary right" (click)="getNextPages()"
+                        [disabled]="checkNext()">next</button></span>
             </div>
             <div>
-                
+
             </div>
         </div>
-        <button class="btn btn-primary group rounded-pill" [routerLink]="['/friend',userDetails?.userId]">goback</button>
     </div>
-    
+
 </div>

@@ -4,6 +4,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SidebarModule } from 'ng-sidebar';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { FilterPipeModule } from 'ngx-filter-pipe';
+import {NgbTooltipModule} from '@ng-bootstrap/ng-bootstrap';
+import { DeferLoadModule } from '@trademe/ng-defer-load';
+
 //import { AngularFontAwesomeModule } from 'angular-font-awesome';
 // import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import { AppRoutingModule } from './app-routing.module';
@@ -22,6 +25,8 @@ import { TodolistModule } from './todolist/todolist.module';
     BrowserAnimationsModule,
     FilterPipeModule,
     NgxSpinnerModule,
+    NgbTooltipModule,
+    DeferLoadModule,
    /// AngularFontAwesomeModule,
     //FontAwesomeModule,
     ToastrModule.forRoot(),
